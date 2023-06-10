@@ -4,10 +4,8 @@ import java.io.IOException;
 
 import org.json.JSONObject;
 
-import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
-import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
@@ -24,8 +22,6 @@ public class Main {
 			Response response;
 
 			OkHttpClient client = new OkHttpClient().newBuilder().build();
-			MediaType mediaType = MediaType.parse("text/plain");
-			RequestBody body = RequestBody.create(mediaType, "");
 
 			String consumerKey = oauthKeys.getString("consumerKey");
 			String ConsumerSecret = oauthKeys.getString("consumerSecret");
@@ -42,14 +38,30 @@ public class Main {
 
 			response = client.newCall(request).execute();
 			System.out.println(response);
-			Integer idi = 0;
-			String responseBodyString = null;
+
 			if (response.isSuccessful()) {
 				ResponseBody responseBody = response.body();
-				responseBodyString = responseBody.string();
+				if (responseBody != null) {
+					String responseBodyString = responseBody.string();
+
+					JSONObject allData = new JSONObject(responseBodyString);
+					JSONObject individualCar = (JSONObject) allData.getJSONArray("List").get(0);
+
+					String make = individualCar.getString("Make");
+					String model = individualCar.getString("Model");
+					Integer year = individualCar.getInt("Year");
+					Integer price = individualCar.getInt("StartPrice");
+					String chassis = individualCar.getString("BodyStyle");
+
+					String colour = individualCar.getString("ExteriorColour");
+					System.out.println(make);
+					System.out.println(model);
+					System.out.println(year.toString());
+					System.out.println(price.toString());
+					System.out.println(chassis);
+				}
 			}
 
-			return new JSONObject(responseBodyString);
 		} catch (IOException e) {
 
 		}
