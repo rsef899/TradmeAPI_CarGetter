@@ -1,7 +1,12 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import okhttp3.OkHttpClient;
@@ -31,34 +36,72 @@ public class Main {
 					+ "oauth_signature_method=\"PLAINTEXT\"," + "oauth_signature=\"" + oauthSignature + "\"";
 
 			// the actual API
+			String baseUrl = "https://api.trademe.co.nz/v1/Search/Motors/Used.json";
+			String make = "Toyota";
+			String bodyStyle = "Sedan";
+			String condition = "Used";
+			int yearMin = 2000;
+			String[] exteriorColour = { "Blue", "Red", "Black", "White", "Silver" };
+			List<String> colourList = new ArrayList<>(Arrays.asList(exteriorColour));
+			String photoSize = "FullSize";
+			int rows = 99;
 
-			Request request = new Request.Builder().url(
-					"https://api.trademe.co.nz/v1/Search/Motors/Used.json?make=Toyota&body_style=Sedan&condition=Used&year_min=2000&photo_size=FullSize&rows=3")
-					.addHeader("Authorization", authorizationHeader).build();
+			StringBuilder urlBuilder = new StringBuilder(baseUrl);
+			urlBuilder.append("?");
+
+			// get multiple colours
+			for (String colour : exteriorColour) {
+				urlBuilder.append("ExteriorColour=").append(colour).append("&");
+			}
+
+			// make the url
+			urlBuilder.append("make=").append(make).append("&body_style=").append(bodyStyle).append("&condition=")
+					.append(condition).append("&year_min=").append(yearMin).append("&photo_size=").append(photoSize)
+					.append("&rows=").append(rows);
+
+			String url = urlBuilder.toString();
+
+			Request request = new Request.Builder().url(url).addHeader("Authorization", authorizationHeader).build();
 
 			response = client.newCall(request).execute();
-			System.out.println(response);
-
 			if (response.isSuccessful()) {
 				ResponseBody responseBody = response.body();
 				if (responseBody != null) {
 					String responseBodyString = responseBody.string();
 
 					JSONObject allData = new JSONObject(responseBodyString);
-					JSONObject individualCar = (JSONObject) allData.getJSONArray("List").get(0);
+					// create a new array where the object will be stored
+					JSONArray newCarsArray = new JSONArray();
 
-					String make = individualCar.getString("Make");
-					String model = individualCar.getString("Model");
-					Integer year = individualCar.getInt("Year");
-					Integer price = individualCar.getInt("StartPrice");
-					String chassis = individualCar.getString("BodyStyle");
+					for (Integer id = 0; id < rows - 1; id++) {
+						// Each new object:
+						JSONObject car = new JSONObject();
 
-					String colour = individualCar.getString("ExteriorColour");
-					System.out.println(make);
-					System.out.println(model);
-					System.out.println(year.toString());
-					System.out.println(price.toString());
-					System.out.println(chassis);
+						JSONObject individualCar = (JSONObject) allData.getJSONArray("List").get(id);
+
+						// get the car details
+						String colour = "";
+						try {
+							colour = individualCar.getString("ExteriorColour");
+							// if odd case of random colour, skip it
+							if (!colourList.contains(colour)) {
+								continue;
+							}
+						}
+						// if null colour skip it
+						catch (JSONException e) {
+							continue;
+
+						}
+
+						// get the details
+						String description;
+						String chassis = individualCar.getString("BodyStyle");
+						Integer price = individualCar.getInt("StartPrice");
+						Integer year = individualCar.getInt("Year");
+						String model = individualCar.getString("Model");
+						String Make = individualCar.getString("Make");
+					}
 				}
 			}
 
