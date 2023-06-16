@@ -18,7 +18,7 @@ public class Main {
 
 	public static void main(String[] args) {
 
-		getCars(readKeys());
+		JSONObject cars = getCars(readKeys());
 	}
 
 	public static JSONObject getCars(JSONObject oauthKeys) {
@@ -43,6 +43,8 @@ public class Main {
 			int yearMin = 2000;
 			String[] exteriorColour = { "Blue", "Red", "Black", "White", "Silver" };
 			List<String> colourList = new ArrayList<>(Arrays.asList(exteriorColour));
+			String[] Chassis = { "Hatchback", "Sedan", "Coupe", "SUV" };
+			List<String> chasisList = new ArrayList<>(Arrays.asList(exteriorColour));
 			String photoSize = "FullSize";
 			int rows = 99;
 
@@ -53,11 +55,13 @@ public class Main {
 			for (String colour : exteriorColour) {
 				urlBuilder.append("ExteriorColour=").append(colour).append("&");
 			}
+			for (String chassis : Chassis) {
+				urlBuilder.append("body_style=").append(chassis).append("&");
+			}
 
 			// make the url
-			urlBuilder.append("make=").append(make).append("&body_style=").append(bodyStyle).append("&condition=")
-					.append(condition).append("&year_min=").append(yearMin).append("&photo_size=").append(photoSize)
-					.append("&rows=").append(rows);
+			urlBuilder.append("make=").append(make).append("&condition=").append(condition).append("&year_min=")
+					.append(yearMin).append("&photo_size=").append(photoSize).append("&rows=").append(rows);
 
 			String url = urlBuilder.toString();
 
@@ -101,6 +105,16 @@ public class Main {
 						Integer year = individualCar.getInt("Year");
 						String model = individualCar.getString("Model");
 						String Make = individualCar.getString("Make");
+
+						// assign the car details
+						car.put("colour", colour != null ? colour : "");
+						car.put("chassis", chassis != null ? chassis : "");
+						car.put("price", price != null ? price : 0);
+						car.put("year", year != null ? year : 0);
+						car.put("model", model != null ? model : "");
+						car.put("make", Make != null ? Make : "");
+						car.put("ID", id != null ? id.toString() : "");
+						newCarsArray.put(car);
 					}
 				}
 			}
