@@ -1,6 +1,9 @@
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -124,6 +127,34 @@ public class Main {
 		}
 		return null;
 
+	}
+
+	public static void writeJson(JSONArray returnedCars) {
+		// Read the existing JSON file
+		String jsonFilePath = "C:\\Users\\schoo\\OneDrive\\Documents\\Other\\Projects\\TradmeAPI_CarGetter\\src\\recievedCars.json";
+		try {
+			String jsonString = new String(Files.readAllBytes(Paths.get(jsonFilePath)));
+
+			// Create a JSONArray or JSONObject from the JSONTokener
+			JSONArray updatedJsonFileArray = new JSONArray(jsonString);
+
+			// add the new cars to the file
+			for (int i = 0; i < returnedCars.length(); i++) {
+				JSONObject movignCar = returnedCars.getJSONObject(i);
+				updatedJsonFileArray.put(movignCar);
+			}
+
+			String stringUpdatedJsonFileArray = updatedJsonFileArray.toString();
+
+			// Write the updated JSON string back to the file
+			FileWriter fileWriter = new FileWriter(jsonFilePath);
+			fileWriter.write(stringUpdatedJsonFileArray);
+			fileWriter.close();
+
+		} catch (IOException e) {
+			e.printStackTrace();
+			return;
+		}
 	}
 
 	public static JSONObject readKeys() {
