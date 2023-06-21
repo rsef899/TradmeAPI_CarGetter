@@ -28,11 +28,12 @@ public class Main {
 
 	public static void main(String[] args) {
 
-		JSONArray cars = getCars("mazda", "SUV", 3, false, readKeys());
+		String[] makes = { "Toyota" };
+		JSONArray cars = getCars(makes, "SUV", 30, false, readKeys());
 		writeJson(cars);
 	}
 
-	public static JSONArray getCars(String make, String bodyStyle, int rows, boolean imagesNeeded,
+	public static JSONArray getCars(String[] make, String bodyStyle, int rows, boolean imagesNeeded,
 			JSONObject oauthKeys) {
 		Response response;
 		// create a new array where the object will be stored
@@ -62,6 +63,8 @@ public class Main {
 				String authorizationHeader = "OAuth " + "oauth_consumer_key=\"" + consumerKey + "\","
 						+ "oauth_signature_method=\"PLAINTEXT\"," + "oauth_signature=\"" + oauthSignature + "\"";
 
+				// make the url
+
 				StringBuilder urlBuilder = new StringBuilder(baseUrl);
 				urlBuilder.append("?");
 
@@ -74,9 +77,19 @@ public class Main {
 				 * urlBuilder.append("body_style=").append(chassis).append("&"); }
 				 */
 
-				// make the url
-				urlBuilder.append("make=").append(make).append("&body_style=").append(bodyStyle).append("&condition=")
-						.append(condition).append("&year_min=").append(yearMin).append("&price_min=").append(priceMin)
+				boolean firstMake = true;
+				// add all make quries
+				for (String makes : make) {
+					if (firstMake) {
+						urlBuilder.append("make=").append(makes);
+						firstMake = false;
+					} else {
+						urlBuilder.append("&make=").append(makes);
+					}
+
+				}
+				urlBuilder.append("&body_style=").append(bodyStyle).append("&condition=").append(condition)
+						.append("&year_min=").append(yearMin).append("&price_min=").append(priceMin)
 						.append("&listing_type=").append(sellerType).append("&photo_size=").append(photoSize)
 						.append("&rows=").append(rows);
 
@@ -165,9 +178,9 @@ public class Main {
 									carImages.put(resourceName);
 								}
 								car.put("images", carImages);
-								newCarsArray.put(car);
-								id++;
 							}
+							newCarsArray.put(car);
+							id++;
 
 						}
 						return newCarsArray;
