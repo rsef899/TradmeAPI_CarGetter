@@ -24,17 +24,18 @@ import okhttp3.ResponseBody;
 
 public class Main {
 
-	static Integer id = 202;
+	static Integer id = 0;
 
 	public static void main(String[] args) {
 
 		String[] makes = { "Toyota" };
-		JSONArray cars = getCars(makes, "SUV", 30, false, readKeys());
+		String[] exteriorColour = { "Blue", "Red", "Black", "White", "Silver" };
+		JSONArray cars = getCars(makes, exteriorColour, "SUV", 30, false, readKeys());
 		writeJson(cars);
 	}
 
-	public static JSONArray getCars(String[] make, String bodyStyle, int rows, boolean imagesNeeded,
-			JSONObject oauthKeys) {
+	public static JSONArray getCars(String[] make, String[] exteriorColour, String bodyStyle, int rows,
+			boolean imagesNeeded, JSONObject oauthKeys) {
 		Response response;
 		// create a new array where the object will be stored
 		JSONArray newCarsArray = new JSONArray();
@@ -47,7 +48,6 @@ public class Main {
 				String condition = "Used";
 				int priceMin = 5500;
 				int yearMin = 2000;
-				String[] exteriorColour = { "Blue", "Red", "Black", "White", "Silver" };
 				List<String> colourList = new ArrayList<>(Arrays.asList(exteriorColour));
 				/*
 				 * String[] Chassis = { "Hatchback", "Sedan", "Coupe", "SUV" }; List<String>
