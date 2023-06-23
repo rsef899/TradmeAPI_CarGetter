@@ -28,13 +28,12 @@ public class Main {
 
 	public static void main(String[] args) {
 
-		String[] makes = { "Toyota" };
 		String[] exteriorColour = { "Blue", "Red", "Black", "White", "Silver" };
-		JSONArray cars = getCars(makes, exteriorColour, "SUV", 30, false, readKeys());
-		writeJson(cars);
+		String[] makes = { "Hyundai", "BMW" };
+		Controller.callGetCars(makes, exteriorColour, "SUV", 31, false, readKeys());
 	}
 
-	public static JSONArray getCars(String[] make, String[] exteriorColour, String bodyStyle, int rows,
+	public static JSONArray getCars(String make, String[] exteriorColour, String bodyStyle, int rows,
 			boolean imagesNeeded, JSONObject oauthKeys) {
 		Response response;
 		// create a new array where the object will be stored
@@ -77,19 +76,8 @@ public class Main {
 				 * urlBuilder.append("body_style=").append(chassis).append("&"); }
 				 */
 
-				boolean firstMake = true;
-				// add all make quries
-				for (String makes : make) {
-					if (firstMake) {
-						urlBuilder.append("make=").append(makes);
-						firstMake = false;
-					} else {
-						urlBuilder.append("&make=").append(makes);
-					}
-
-				}
-				urlBuilder.append("&body_style=").append(bodyStyle).append("&condition=").append(condition)
-						.append("&year_min=").append(yearMin).append("&price_min=").append(priceMin)
+				urlBuilder.append("make=").append(make).append("&body_style=").append(bodyStyle).append("&condition=")
+						.append(condition).append("&year_min=").append(yearMin).append("&price_min=").append(priceMin)
 						.append("&listing_type=").append(sellerType).append("&photo_size=").append(photoSize)
 						.append("&rows=").append(rows);
 
